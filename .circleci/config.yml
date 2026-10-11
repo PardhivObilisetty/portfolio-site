@@ -24,10 +24,58 @@ jobs:
 
           command: npx --yes html-validate index.html
 
+  deploy-to-vercel:
+
+    docker:
+
+      - image: cimg/node:22.14
+
+    steps:
+
+      - checkout
+
+      - run:
+
+          name: Check deployment credentials
+
+          command: |
+
+            test -n "$VERCEL_TOKEN"
+
+            test -n "$VERCEL_PROJECT_ID"
+
+            test -n "$VERCEL_ORG_ID"
+
+      - run:
+
+          name: Deploy portfolio to Vercel
+
+          command: |
+
+            npx --yes vercel@latest deploy \
+
+              --prod \
+
+              --yes \
+
+              --token="$VERCEL_TOKEN"
+
 workflows:
 
-  portfolio-ci:
+  portfolio-ci-cd:
 
     jobs:
 
       - validate-html
+
+      - deploy-to-vercel:
+
+          requires:
+
+            - validate-html
+
+          filters:
+
+            branches:
+
+              only: main
