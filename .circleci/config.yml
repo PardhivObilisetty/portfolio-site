@@ -1,0 +1,23 @@
+version: 2.1
+jobs:
+  validate-html:
+    docker:
+      - image: cimg/node:22.14
+    steps:
+      - checkout
+      - run:
+        name: Check repository files
+        command: |
+          echo "Checking portfolio files..."
+          test -f index.html || {
+            echo "ERROR: index.html was not found in the repository root."
+            exit 1
+        }
+
+      - run:
+        name: Validate HTML
+        command: npx --yes html-validate index.html
+workflows:
+  portfolio-ci:
+    jobs:
+      - validate-html
